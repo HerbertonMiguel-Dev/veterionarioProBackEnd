@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id String @id @default(uuid())
+  nome String
+  email String
+  endereco String?
+  senha String
+  stripe_customer_id String?
+
+  criado_em DateTime? @default(now())
+  atualizado_em DateTime? @default(now())
+
+  @@map("usuarios")
+  assinaturas Assinatura?
+  consultas Consulta[]
+  servico Servico[]
+  veterinarios Veterinario[]
+  pets Pet[]
+  responsaveis Responsavel[]
+}
+
+model Responsavel {
+  id String @id @default(uuid())
+  nome String
+  telefone BigInt?
+  endereco String?
+  cadastro  Boolean @default(true)
+  criado_em DateTime? @default(now())
+  atualizado_em DateTime? @default(now())
+
+  @@map("responsaveis")
+  pets ResponsaveisPet[] // Relacionamento com Pet via tabela intermediária
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
+  usuario_id String
+  consultas Consulta[]
+}
+
+model Pet {
+  id String @id @default(uuid())
+  nome String
+  tipo String
+  raca String?
+  idade Int?
+  peso Float?
+  cadastro Boolean @default(true)
+  criado_em DateTime? @default(now())
+  atualizado_em DateTime? @default(now())
+
+  @@map("pets")
+  responsaveis ResponsaveisPet[] // Relacionamento muitos para muitos via ResponsaveisPet
+  servico Servico[]
+  consultas Consulta[]
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
+  usuario_id String
+}
+
+model Veterinario {
+  id String @id @default(uuid())
+  nome String
+  crmv String
+  status Boolean @default(true)
+
+  @@map("veterinarios")
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
+  usuario_id String
+  consultas Consulta[]
+}
+
+model Assinatura {
+  id String @id
+  status String
+  precoId String
+  criado_em DateTime? @default(now())
+  atualizado_em DateTime? @default(now())
+
+  @@map("assinaturas")
+  usuarioId String @unique
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+}
+
+model Servico {
+  id String @id @default(uuid())
+  nome String
+  preco Float
+  status Boolean @default(true)
+  criado_em DateTime? @default(now())
+  atualizado_em DateTime? @default(now())
+
+  @@map("servicos")
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
+  usuario_id String
+  consulta Consulta[]
+  pets Pet[]
+}
+
+model Consulta {
+  id String @id @default(uuid())
+
+  criado_em DateTime? @default(now())
+  atualizado_em DateTime? @default(now())
+
+  @@map("consultas")
+  servico Servico @relation(fields: [servico_id], references: [id])
+  servico_id String
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
+  usuario_id String
+  pet Pet? @relation(fields: [pet_id], references: [id])
+  pet_id String?
+  veterinario Veterinario? @relation(fields: [veterinario_id], references: [id])
+  veterinario_id String?
+  responsavel Responsavel? @relation(fields: [responsavel_id], references: [id])
+  responsavel_id String?
+}
+
+model ResponsaveisPet { 
+  id String @id @default(uuid())
+  responsavel_id String
+  pet_id String
+
+  responsavel Responsavel @relation(fields: [responsavel_id], references: [id])
+  pet Pet @relation(fields: [pet_id], references: [id])
+
+  @@unique([responsavel_id, pet_id])
+  @@map("responsaveis_pets")
+}
