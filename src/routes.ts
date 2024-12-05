@@ -15,6 +15,7 @@ import { ListPetController } from './controllers/pet/ListPetController'
 import { UpdatePetController } from './controllers/pet/UpdatePetController'
 import { DetailPetController } from './controllers/pet/DetailPetController'
 import { CountPetController } from './controllers/pet/CountPetController'
+import { SearchPetByPhoneController } from './controllers/pet/SearchPetByPhoneController'
 
 import { CreateVeterinarioController } from './controllers/veterinario/CreateVeterinarioController'
 import { ListVeterinarioController } from './controllers/veterinario/ListVeterinarioController'
@@ -40,6 +41,7 @@ import { WebhooksController } from './controllers/assinatura/WebhooksController'
 import { CreatePortalController } from './controllers/assinatura/CreatePortalController'
 
 import { isAuthenticated } from './middlewares/isAuthenticated'
+import { addUsuarioIdToQuery } from './middlewares/addUsuarioIdToQuery'
 
 
 const router = Router();
@@ -60,7 +62,7 @@ router.get('/responsavel/count', isAuthenticated, new CountResponsavelController
 router.post('/pet', isAuthenticated, new CreatePetController().handle)
 router.get('/pets', isAuthenticated, new ListPetController().handle)
 router.put('/pet', isAuthenticated, new UpdatePetController().handle)
-router.get('/pets/search', isAuthenticated, new ListPetController().handle)
+router.get('/pets/search', addUsuarioIdToQuery, new SearchPetByPhoneController().handle)
 router.get('/pet/detail', isAuthenticated, new DetailPetController().handle)
 router.get('/pet/count', isAuthenticated, new CountPetController().handle)
 
