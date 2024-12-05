@@ -78,7 +78,7 @@ router.get('/veterinario/detail', isAuthenticated, new DetailVeterinarioControll
 router.post('/servico', isAuthenticated, new CreateServicoController().handle)
 router.get('/servicos', isAuthenticated, new ListServicoController().handle)
 router.put('/servico', isAuthenticated, new UpdateServicoController().handle)
-router.get('/servico/check', isAuthenticated, new CheckSubscriptionController().handle)
+router.get('/servico/check', isAuthenticated,addUsuarioIdToQuery, new CheckSubscriptionController().handle)
 router.get('/servico/count', isAuthenticated, new CountServicosController().handle)
 router.get('/servico/detail', isAuthenticated, new DetailServicoController().handle)
 
